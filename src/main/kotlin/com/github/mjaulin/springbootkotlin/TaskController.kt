@@ -15,10 +15,8 @@ class TaskController(val taskRepository: TaskRepository) {
     }
 
     @PostMapping
-    fun add(@RequestBody task: Task) : ResponseEntity<Void> {
-        val result = taskRepository.save(task)
-        val uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.id).toUri()
-        return ResponseEntity.created(uri).build()
+    fun add(@RequestBody task: Task) : ResponseEntity<Task> {
+        return ResponseEntity.ok(taskRepository.save(task))
     }
 
     @PutMapping("{id}")
