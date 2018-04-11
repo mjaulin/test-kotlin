@@ -14,7 +14,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kotlin.version>1.2.31</kotlin.version>
+        <kotlin.version>1.2.30</kotlin.version>
+        <docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
+        <image.name>${project.artifactId}</image.name>
     </properties>
 
     <dependencies>
@@ -37,7 +39,7 @@
             <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.derjust</groupId>
+            <groupId>com.github.spring-data-dynamodb</groupId>
             <artifactId>spring-data-dynamodb</artifactId>
             <version>5.0.2</version>
         </dependency>
@@ -89,6 +91,35 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <imageName>${image.name}</imageName>
+                    <baseImage>openjdk:8-jre-alpine</baseImage>
+                    <exposes>
+                        <expose>8080</expose>
+                    </exposes>
+                    <entryPoint>["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-XX:+UseG1GC", "-jar", "/opt/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/opt</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>
