@@ -15,6 +15,7 @@
 
     <properties>
         <kotlin.version>1.2.30</kotlin.version>
+        <spring-data-dynamodb.version>5.0.2</spring-data-dynamodb.version>
         <docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
         <image.name>${project.artifactId}</image.name>
     </properties>
@@ -41,7 +42,7 @@
         <dependency>
             <groupId>com.github.spring-data-dynamodb</groupId>
             <artifactId>spring-data-dynamodb</artifactId>
-            <version>5.0.2</version>
+            <version>${spring-data-dynamodb.version}</version>
         </dependency>
 
         <dependency>
@@ -66,24 +67,7 @@
                     <compilerPlugins>
                         <plugin>spring</plugin>
                     </compilerPlugins>
-                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
@@ -92,35 +76,45 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>build-image</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <imageName>${image.name}</imageName>
-                    <baseImage>openjdk:8-jre-alpine</baseImage>
-                    <exposes>
-                        <expose>8080</expose>
-                    </exposes>
-                    <entryPoint>["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-XX:+UseG1GC", "-jar", "/opt/${project.build.finalName}.jar"]</entryPoint>
-                    <resources>
-                        <resource>
-                            <targetPath>/opt</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${docker-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>${image.name}</imageName>
+                            <baseImage>openjdk:8-jre-alpine</baseImage>
+                            <exposes>
+                                <expose>8080</expose>
+                            </exposes>
+                            <entryPoint>["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-XX:+UseG1GC", "-jar", "/opt/${project.build.finalName}.jar"]</entryPoint>
+                            <resources>
+                                <resource>
+                                    <targetPath>/opt</targetPath>
+                                    <directory>${project.build.directory}</directory>
+                                    <include>${project.build.finalName}.jar</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

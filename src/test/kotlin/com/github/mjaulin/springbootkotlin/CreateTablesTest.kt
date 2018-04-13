@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = [Application::class])
 @TestPropertySource(properties = ["amazon.dynamodb.endpoint=http://localhost:8000/"])
-class CreateTables {
+class CreateTablesTest {
 
     companion object {
         @BeforeClass @JvmStatic
