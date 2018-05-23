@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.mjaulin</groupId>
-    <artifactId>test-kotlin</artifactId>
+    <artifactId>todo-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
