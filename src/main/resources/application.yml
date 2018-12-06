@@ -3,3 +3,7 @@ spring:
     name: test-kotin
   profiles:
     active: development
+
+server:
+  servlet:
+    context-path: /api
